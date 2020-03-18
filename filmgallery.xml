@@ -1,0 +1,80 @@
+<extension version="3.0" type="plugin" group="content" method="upgrade" client="site">
+    <name>Film Gallery</name>
+    <author>Ivan Komlev</author>
+    <creationDate>June 2018</creationDate>
+    <copyright>Copyright (C) 2009-2018 Ivan Komlev. All rights reserved.</copyright>
+    <license>GNU General Public License</license>
+    <authorEmail>support@joomlaboat.com</authorEmail>
+    <authorUrl>http://www.joomlaboat.com/</authorUrl>
+    <version>1.1.2</version>
+    <description>
+	
+<![CDATA[
+<h1>Film Gallery Plugin</h1>
+<p>v. 1.1.2</p>
+<p>A plugin to show window of photos with a scroll bar.</p>
+
+<p>Copy Protection option - some sort of glass infront of image to block 'Image save as', needs to be enabled in plugin settings.</p>
+<h3>Usage</h3>
+
+
+<p>{filmgallery=FOLDER, WIDTH, HEIGTH, SCROLLPOSITION, FILELIST, THUMBBGIMAGE, SCROLLSIZE, THUMBWIDTH, THUMBHEIGHT, CSSSTYLE}</p>
+
+<p>SCROLLPOSITION: left | right | top | bottom</p>
+
+<p>FILELIST: this is optional parameter file names (names only, without path) should be separated with semicolon ;</p>
+
+<p>Only first four options are required (FOLDER, WIDTH, HEIGTH, SCROLLPOSITION) the rest of the are optional</p>
+
+<p>example:</p>
+
+<p>{filmgallery=images/fadegallery3,400,200,right}</p>
+]]>
+    
+</description>
+    <files>
+        <filename plugin="filmgallery">filmgallery.php</filename>
+		<filename>filmgallery.xml</filename>
+		
+		<filename>files/film_h.gif</filename>
+		<filename>files/film_v.gif</filename>
+		<filename>files/glass.png</filename>
+		<filename>render.php</filename>
+    </files>
+    <config>
+	<fields name="params">
+		<fieldset name="basic">
+			
+		<field name="copyprotection" type="radio" default="0" label="Copy protection" description="This will place sort of glass infront of image to do not block image saving/draging" >
+			<option value="1">Yes</option>
+			<option value="0">No</option>
+		</field>
+		
+		
+		<field
+                        name="avoidtextarea"
+                        type="radio"
+                        label="Avoid TEXTAREA tags"
+                        description="Avoid TEXTAREA tags"
+                        class="inputbox"
+                        default="0"
+                >
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+        </field>
+				
+				
+		</fieldset>
+	</fields>
+	</config>
+	
+	<languages>
+      <language tag="en-GB">language/en-GB/en-GB.plg_content_filmgallery.ini</language>
+    </languages>
+
+	<updateservers>
+	    <server type="extension" enabled="1" element="plg_filmgallery" priority="2" name="Film Gallery">https://joomlaboat.com/updates/extensions/filmgallery.xml</server>
+	</updateservers>
+
+	
+</extension>
