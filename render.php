@@ -603,7 +603,7 @@ class FilmGalleryClass
 
 	function getFileList($dirpath, $filelist)
 	{
-		$sys_path=JPATH_SITE.DIRECTORY_SEPARATOR.str_replace('/',DS,$dirpath);
+		$sys_path=JPATH_SITE . DIRECTORY_SEPARATOR . str_replace('/',DIRECTORY_SEPARATOR,$dirpath);
 
 		$imList= array();
 		if($filelist)
