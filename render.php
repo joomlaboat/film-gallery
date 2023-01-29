@@ -1,29 +1,30 @@
 <?php
 /**
- * Film Gallery Joomla! 3.x Native Component
- * @version 1.1.2
+ * Film Gallery Joomla! 3.x/4.x Native Component
+ * @version 1.1.3
  * @author Ivan Komlev <support@joomlaboat.com>
- * Copyright (C) 2009-2018 Ivan Komlev
+ * Copyright (C) 2009-2023 Ivan Komlev
  * @link http://www.joomlaboat.com
  * @license GNU/GPL *
  */
 
+use Joomla\CMS\Factory;
 
 defined('_JEXEC') or die('Restricted access');
 
 class FilmGalleryClass
 {
     var bool $copyProtection;
-    var $bgimagefolder;
+    var string $backgroundImageFolder;
     var int $scrollSize;
-    var $thumbwidth;
-    var $thumbheight;
-    var $padding;
+    var int $thumbWidth;
+    var int $thumbHeight;
+    var int $padding;
     private string $thumbBackgroundImage;
 
     function getFilmGallery($galleryParams, $count): string
     {
-        $opt = str_getcsv($galleryParams,",","\"");
+        $opt = str_getcsv($galleryParams);
 
         if (count($opt) < 1)
             return '';
@@ -57,12 +58,12 @@ class FilmGalleryClass
         if ($this->scrollSize == 0)
             $this->scrollSize = 135;
 
-        $this->thumbwidth = 0;
-        if (count($opt) > 7) (int)$this->thumbwidth = $opt[7];
-        $this->thumbheight = 0;
-        if (count($opt) > 8) (int)$this->thumbheight = $opt[8];
+        $this->thumbWidth = 0;
+        if (count($opt) > 7) (int)$this->thumbWidth = $opt[7];
+        $this->thumbHeight = 0;
+        if (count($opt) > 8) (int)$this->thumbHeight = $opt[8];
 
-        $this->padding = '5';
+        $this->padding = 5;
         if (count($opt) > 9) (int)$this->padding = $opt[9];
 
         $imageFiles = $this->getFileList($folder, $fileList);
@@ -92,9 +93,9 @@ class FilmGalleryClass
                 $rel = $pair[1] ?? 'shadowbox';
 
                 if ($pair[0] == 'vertical')
-                    $result = $this->drawGalleryVertical($imageFiles, $width, $height, $divName, $rel);
+                    $result = $this->drawGalleryVertical($imageFiles, $height, $divName, $rel);
                 elseif ($pair[0] == 'horizontal')
-                    $result = $this->drawGalleryHorizontal($imageFiles, $width, $height, $divName, $rel);
+                    $result = $this->drawGalleryHorizontal($imageFiles, $width, $divName, $rel);
                 else
                     $result = $this->drawGalleryRight($imageFiles, $width, $height, $divName);
         }
@@ -119,7 +120,7 @@ class FilmGalleryClass
                 $filename = $sys_path . DIRECTORY_SEPARATOR . trim($b);
 
                 if (file_exists($filename))
-                    $imList[] = '/' . $dirPath . '/' . trim($b);;
+                    $imList[] = '/' . $dirPath . '/' . trim($b);
             }
         } else {
             if (file_exists($sys_path)) {
@@ -128,7 +129,7 @@ class FilmGalleryClass
 
                     while (false !== ($file = readdir($handle))) {
 
-                        $FileExt = $this->FileExtenssion($file);
+                        $FileExt = $this->FileExtension($file);
                         if (in_array($FileExt, $extensionList)) {
 
                             if ($dirPath[0] == '/')
@@ -146,7 +147,7 @@ class FilmGalleryClass
         return $imList;
     }
 
-    function FileExtenssion($src): string
+    function FileExtension($src): string
     {
         $fileExtension = '';
         $name = explode(".", strtolower($src));
@@ -155,37 +156,35 @@ class FilmGalleryClass
         $extensions = explode(" ", $allowedExtensions);
         for ($i = 0; count($extensions) > $i; $i = $i + 1) {
             if ($extensions[$i] == $currentExtensions) {
-                $fileExtension = $extensions[$i];
-
-                return $fileExtension;
+                return $extensions[$i];
             }
         }
         return $fileExtension;
     }
 
-    function drawGalleryLeft(&$imageFiles, $width, $height, $divName): string
+    function drawGalleryLeft($imageFiles, $width, $height, $divName): string
     {
-        if ($this->thumbwidth == 0)
-            $this->thumbwidth = 90;
+        if ($this->thumbWidth == 0)
+            $this->thumbWidth = 90;
 
         if ($this->thumbBackgroundImage == '')
-            $this->thumbBackgroundImage = $this->bgimagefolder . 'film_v.gif';
+            $this->thumbBackgroundImage = $this->backgroundImageFolder . 'film_v.gif';
 
         if ($this->thumbBackgroundImage == 'none')
             $this->thumbBackgroundImage = '';
 
         $htmlresult = '
         <!-- Film Gallery (Left Scroll)-->
-		<table width="' . ($width + $this->scrollSize) . '" height="' . $height . '" border="0" align="center" cellpadding="0" cellspacing="0" style="border:none;padding:0;margin:0;">
+		<table style="width:' . ($width + $this->scrollSize) . 'px;height:' . $height . 'px;border:none;text-align:center;padding:0;margin:0;border-collapse: collapse; border-spacing: 0;">
 		<tr>
-		<td valign="top" style="margin:0;padding:0;border:none;" align="center">';
+		<td style="margin:0;padding:0;border:none;text-align: center;vertical-align: top;">';
 
         $htmlresult .= $this->VerticalNavigation($imageFiles, $height, $divName);
         $htmlresult .= '
 		</td>
-		<td align="center" width="' . $width . '" style="margin:0;padding:0;border:none;">
+		<td style="text-align:center;width:'.$width.'px;margin:0;padding:0;border:none;">
 		<div style="width:' . $width . 'px; height:' . $height . 'px;position: relative;overflow:hidden;">
-        <img src="' . $imageFiles[0] . '" width="' . $width . '" height="' . $height . '" style="z-index:4;padding:0;margin:0;" id="' . $divName . '_Main" name="' . $divName . '_Main">';
+        <img src="' . $imageFiles[0] . '" width="' . $width . '" height="' . $height . '" style="z-index:4;padding:0;margin:0;" id="' . $divName . '_Main">';
 
         if ($this->copyProtection)
             $htmlresult .= '<div style="position: absolute;top: 0;left:0;width:' . $width . 'px;height:' . $height . 'px;background-image: url(plugins/content/filmgalleryfiles/glass.png);background-repeat: repeat;"></div>';
@@ -198,7 +197,7 @@ class FilmGalleryClass
         return $htmlresult;
     }
 
-    function VerticalNavigation(&$imageFiles, $height, $divName, $rel = '', $add_15px = false): string
+    function VerticalNavigation($imageFiles, $height, $divName, $rel = '', $add_15px = false): string
     {
         $htmlresult = '<div style="';
 
@@ -225,49 +224,49 @@ class FilmGalleryClass
 
         //List of Images
 
-        foreach ($imageFiles as $imagefile) {
+        foreach ($imageFiles as $imageFile) {
             $htmlresult .= '
             <tr>
-			<td width="' . $this->scrollSize . '" valign="middle" align="center" style="position:relative;border:none;margin:0;padding:0;" >
+			<td style="width:' . $this->scrollSize . 'px;vertical-align:middle;text-align:center;position:relative;border:none;margin:0;padding:0;" >
 ';
 
             if ($this->copyProtection and $rel == '') {
                 $htmlresult .= '
-				<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbwidth . 'px;margin-left:auto;margin-right:auto;position:relative;cursor:pointer;" onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imagefile . '";\'	onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imagefile . '";\'>
-				<img src="' . $imagefile . '" width="' . $this->thumbwidth . '" style="padding:0;width:' . $this->thumbwidth . 'px;margin:0;border:none;">';
-                $htmlresult .= '<div style="position: absolute;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->bgimagefolder . 'glass.png);background-repeat: repeat;"></div>';
+				<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbWidth . 'px;margin-left:auto;margin-right:auto;position:relative;cursor:pointer;" onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imageFile . '";\'	onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imageFile . '";\'>
+				<img src="' . $imageFile . '" width="' . $this->thumbWidth . '" style="padding:0;width:' . $this->thumbWidth . 'px;margin:0;border:none;">';
+                $htmlresult .= '<div style="position: absolute;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->backgroundImageFolder . 'glass.png);background-repeat: repeat;"></div>';
                 $htmlresult .= '</div>
 				';
             } elseif (!$this->copyProtection and $rel == '') {
                 $htmlresult .= '
-					<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbwidth . 'px;margin-left:auto;margin-right:auto;">
-					<img src="' . $imagefile . '" width="' . $this->thumbwidth . '" style="border:none;padding:0;width:' . $this->thumbwidth . 'px;margin:0;"
-					onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imagefile . '";\'>
+					<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbWidth . 'px;margin-left:auto;margin-right:auto;">
+					<img src="' . $imageFile . '" width="' . $this->thumbWidth . '" style="border:none;padding:0;width:' . $this->thumbWidth . 'px;margin:0;"
+					onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imageFile . '";\'>
 					</div>';
             } elseif (!$this->copyProtection and $rel != '') {
                 $alt = '';
-                $htmlresult .= '<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbwidth . 'px;margin-left:auto;margin-right:auto;">';
+                $htmlresult .= '<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbWidth . 'px;margin-left:auto;margin-right:auto;">';
 
                 if ($rel == 'jcepopup')
-                    $htmlresult .= '<a href="' . $imagefile . '" class="jcepopup" rel="title[' . $alt . '];caption[' . $alt . '];group[filmgallery];">';
+                    $htmlresult .= '<a href="' . $imageFile . '" class="jcepopup" rel="title[' . $alt . '];caption[' . $alt . '];group[filmgallery];">';
                 else
-                    $htmlresult .= '<a href="' . $imagefile . '" rel="' . $rel . '">';
+                    $htmlresult .= '<a href="' . $imageFile . '" rel="' . $rel . '">';
 
-                $htmlresult .= '<img src="' . $imagefile . '" width="' . $this->thumbwidth . '" style="border:none;padding:0;width:' . $this->thumbwidth . 'px;margin:0;" /></a>
+                $htmlresult .= '<img src="' . $imageFile . '" width="' . $this->thumbWidth . '" style="border:none;padding:0;width:' . $this->thumbWidth . 'px;margin:0;" /></a>
 					</div>';
             } elseif ($this->copyProtection and $rel != '') {
                 $alt = '';
 
                 if ($rel == 'jcepopup')
-                    $htmlresult .= '<a href="' . $imagefile . '" class="jcepopup" rel="title[' . $alt . '];caption[' . $alt . '];group[filmgallery];">';
+                    $htmlresult .= '<a href="' . $imageFile . '" class="jcepopup" rel="title[' . $alt . '];caption[' . $alt . '];group[filmgallery];">';
                 else
-                    $htmlresult .= '<a href="' . $imagefile . '" rel="' . $rel . '">';
+                    $htmlresult .= '<a href="' . $imageFile . '" rel="' . $rel . '">';
 
                 $htmlresult .= '
 
-				<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbwidth . 'px;margin-left:auto;margin-right:auto;position:relative;cursor:pointer;" >
-				<img src="' . $imagefile . '" width="' . $this->thumbwidth . '" style="border:none;padding:0;width:' . $this->thumbwidth . 'px;margin:0;" />';
-                $htmlresult .= '<div style="position: absolute;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->bgimagefolder . 'glass.png);background-repeat: repeat;"></div>';
+				<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbWidth . 'px;margin-left:auto;margin-right:auto;position:relative;cursor:pointer;" >
+				<img src="' . $imageFile . '" width="' . $this->thumbWidth . '" style="border:none;padding:0;width:' . $this->thumbWidth . 'px;margin:0;" />';
+                $htmlresult .= '<div style="position: absolute;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->backgroundImageFolder . 'glass.png);background-repeat: repeat;"></div>';
                 $htmlresult .= '</div></a>
 ';
             }
@@ -281,13 +280,13 @@ class FilmGalleryClass
         return $htmlresult;
     }
 
-    function drawGalleryRight(&$imageFiles, $width, $height, $divName): string
+    function drawGalleryRight($imageFiles, $width, $height, $divName): string
     {
-        if ($this->thumbwidth == 0)
-            $this->thumbwidth = 90;
+        if ($this->thumbWidth == 0)
+            $this->thumbWidth = 90;
 
         if ($this->thumbBackgroundImage == '')
-            $this->thumbBackgroundImage = $this->bgimagefolder . 'film_v.gif';
+            $this->thumbBackgroundImage = $this->backgroundImageFolder . 'film_v.gif';
 
         if ($this->thumbBackgroundImage == 'none')
             $this->thumbBackgroundImage = '';
@@ -295,18 +294,18 @@ class FilmGalleryClass
         $htmlresult = '
         <!-- Film Gallery (Right Scroll)-->
 
-		<table width="' . ($width + $this->scrollSize + 15) . '" height="' . $height . '" border="0" align="center" cellpadding="0" cellspacing="0" style="border:none;padding:0;margin:0;">
+		<table style="padding: 0;border-collapse: collapse; border-spacing: 0;height:' . $height . 'px;width:' . ($width + $this->scrollSize + 15) . 'px;text-align:center;border:none;margin:0;">
 		<tr>
-		<td align="center" width="' . $width . '" style="margin:0;padding:0;border:none;">
+		<td style="width:' . $width . 'px;text-align:center;margin:0;padding:0;border:none;">
 		<div style="width:' . $width . 'px; height:' . $height . 'px;position: relative;overflow:hidden;">
-        <img src="' . $imageFiles[0] . '" width="' . $width . '" height="' . $height . '" style="z-index:4;padding:0;margin:0;" id="' . $divName . '_Main" name="' . $divName . '_Main">';
+        <img src="' . $imageFiles[0] . '" style="width:' . $width . 'px;height:' . $height . 'px;z-index:4;padding:0;margin:0;" id="' . $divName . '_Main">';
 
         if ($this->copyProtection)
             $htmlresult .= '<div style="position: absolute;top: 0;left:0;width:' . $width . 'px;height:' . $height . 'px;background-image: url(plugins/content/filmgalleryfiles/glass.png);background-repeat: repeat;"></div>';
 
         $htmlresult .= '</div>
 		</td>
-		<td valign="top" style="padding-top:0px;margin:0;padding:0;text-align:left;border:none;" align="center">';
+		<td style="vertical-align:top;margin:0;padding:0;border:none;text-align: center">';
         $htmlresult .= $this->VerticalNavigation($imageFiles, $height, $divName, '', true);
         $htmlresult .= '</td>
 		</tr>
@@ -315,13 +314,13 @@ class FilmGalleryClass
         return $htmlresult;
     }
 
-    function drawGalleryTop(&$imagefiles, $width, $height, $divName): string
+    function drawGalleryTop($imagefiles, $width, $height, $divName): string
     {
-        if ($this->thumbheight == 0)
-            $this->thumbheight = 90;
+        if ($this->thumbHeight == 0)
+            $this->thumbHeight = 90;
 
         if ($this->thumbBackgroundImage == '')
-            $this->thumbBackgroundImage = $this->bgimagefolder . 'film_h.gif';
+            $this->thumbBackgroundImage = $this->backgroundImageFolder . 'film_h.gif';
 
         if ($this->thumbBackgroundImage == 'none')
             $this->thumbBackgroundImage = '';
@@ -332,14 +331,14 @@ class FilmGalleryClass
         $htmlresult .= $this->HorizontalNavigation($imagefiles, $width, $divName);
         $htmlresult .= '
 		<div style="position: relative;overflow:hidden;">
-        <img src="' . $imagefiles[0] . '" width="' . $width . '" height="' . $height . '" style="z-index:4;padding:0;margin:0;" id="' . $divName . '_Main" name="' . $divName . '_Main">';
+        <img src="' . $imagefiles[0] . '" style="width:' . $width . 'px;height:' . $height . 'px;z-index:4;padding:0;margin:0;" id="' . $divName . '_Main">';
         if ($this->copyProtection)
             $htmlresult .= '<div style="position: absolute;top: 0;left:0;width:' . $width . 'px;height:' . $height . 'px;background-image: url(plugins/content/filmgalleryfiles/glass.png);background-repeat: repeat;"></div>';
         $htmlresult .= '</div>';
         return $htmlresult;
     }
 
-    function HorizontalNavigation(&$imagefiles, $width, $divName, $rel = '')
+    function HorizontalNavigation($imageFiles, $width, $divName, $rel = ''): string
     {
         $htmlresult = '
 		<div style="
@@ -360,52 +359,52 @@ class FilmGalleryClass
 
         $htmlresult .= '"><tbody>
 
-			<tr height="' . $this->scrollSize . '" >';
+			<tr style="height:' . $this->scrollSize . 'px;" >';
 
         //List of Images
-        foreach ($imagefiles as $imageFile) {
-            $marginTop = (int)(($this->scrollSize - $this->thumbheight) / 2);
+        foreach ($imageFiles as $imageFile) {
+            $marginTop = (int)(($this->scrollSize - $this->thumbHeight) / 2);
 
             $htmlresult .= '<td height="' . $this->scrollSize . '" width="110" align="center" valign="top" style="width:110px !important;position:relative;border:none;margin:0;padding:0;">';
 
             if ($this->copyProtection and $rel == '') {
                 $htmlresult .= '
-				<div style="margin-right:' . $this->padding . 'px;height:' . $this->thumbheight . 'px;
+				<div style="margin-right:' . $this->padding . 'px;height:' . $this->thumbHeight . 'px;
 				width:110px !important;
 				margin-top:' . $marginTop . 'px;
 				position:relative;
 				cursor:pointer;"
 				onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imageFile . '";\'	onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imageFile . '";\'>
-				<img src="' . $imageFile . '" height="' . $this->thumbheight . '" style="padding:0;height:' . $this->thumbheight . 'px;margin:0;border:none;">';
-                $htmlresult .= '<div style="position: absolute;width:110px !important;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->bgimagefolder . 'glass.png);background-repeat: repeat;"></div>';
+				<img src="' . $imageFile . '" height="' . $this->thumbHeight . '" style="padding:0;height:' . $this->thumbHeight . 'px;margin:0;border:none;">';
+                $htmlresult .= '<div style="position: absolute;width:110px !important;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->backgroundImageFolder . 'glass.png);background-repeat: repeat;"></div>';
                 $htmlresult .= '</div>
 				';
 
             } elseif (!$this->copyProtection and $rel == '') {
-                $htmlresult .= '<div style="margin-right:' . $this->padding . 'px;height:' . $this->thumbheight . 'px;margin-top:' . $marginTop . 'px;">
+                $htmlresult .= '<div style="margin-right:' . $this->padding . 'px;height:' . $this->thumbHeight . 'px;margin-top:' . $marginTop . 'px;">
 					<img src="' . $imageFile . '" ';
 
-                if ($this->thumbwidth != 0)
-                    $htmlresult .= ' width="' . $this->thumbwidth . '"';
+                if ($this->thumbWidth != 0)
+                    $htmlresult .= ' width="' . $this->thumbWidth . '"';
 
-                $htmlresult .= ' height="' . $this->thumbheight . '" style="border:none;margin:0;padding:0;max-width:none !important;width:110px !important;';
+                $htmlresult .= ' height="' . $this->thumbHeight . '" style="border:none;margin:0;padding:0;max-width:none !important;width:110px !important;';
 
-                if ($this->thumbwidth != 0)
-                    $htmlresult .= 'width:' . $this->thumbwidth . 'px;';
+                if ($this->thumbWidth != 0)
+                    $htmlresult .= 'width:' . $this->thumbWidth . 'px;';
 
-                $htmlresult .= 'height:' . $this->thumbheight . 'px;" onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imageFile . '";\'>
+                $htmlresult .= 'height:' . $this->thumbHeight . 'px;" onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imageFile . '";\'>
 					</div>';
             } elseif (!$this->copyProtection and $rel != '') {
                 $alt = '';
-                $htmlresult .= '<div style="width:110px !important;margin-right:' . $this->padding . 'px;height:' . $this->thumbheight . 'px;margin-top:' . $marginTop . 'px;">';
+                $htmlresult .= '<div style="width:110px !important;margin-right:' . $this->padding . 'px;height:' . $this->thumbHeight . 'px;margin-top:' . $marginTop . 'px;">';
 
                 if ($rel == 'jcepopup')
                     $htmlresult .= '<a href="' . $imageFile . '" class="jcepopup" rel="title[' . $alt . '];caption[' . $alt . '];group[filmgallery];">';
                 else
                     $htmlresult .= '<a href="' . $imageFile . '" rel="' . $rel . '">';
 
-                $htmlresult .= '<img src="' . $imageFile . '" height="' . $this->thumbheight . '" style="
-					width:110px !important;border:none;margin:0;padding:0;height:' . $this->thumbheight . 'px;" alt="' . $alt . '" /></a>
+                $htmlresult .= '<img src="' . $imageFile . '" height="' . $this->thumbHeight . '" style="
+					width:110px !important;border:none;margin:0;padding:0;height:' . $this->thumbHeight . 'px;" alt="' . $alt . '" /></a>
 					</div>';
             } elseif ($this->copyProtection and $rel != '') {
                 $alt = '';
@@ -417,12 +416,12 @@ class FilmGalleryClass
 
                 $htmlresult .= '
 
-				<div style="margin-right:' . $this->padding . 'px;height:' . $this->thumbheight . 'px;
+				<div style="margin-right:' . $this->padding . 'px;height:' . $this->thumbHeight . 'px;
 				margin-top:' . $marginTop . 'px;
 				position:relative;
 				cursor:pointer;">
-				<img src="' . $imageFile . '" height="' . $this->thumbheight . '" style="padding:0;height:' . $this->thumbheight . 'px;margin:0;border:none;">';
-                $htmlresult .= '<div style="position: absolute;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->bgimagefolder . 'glass.png);background-repeat: repeat;"></div>';
+				<img src="' . $imageFile . '" height="' . $this->thumbHeight . '" style="padding:0;height:' . $this->thumbHeight . 'px;margin:0;border:none;">';
+                $htmlresult .= '<div style="position: absolute;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->backgroundImageFolder . 'glass.png);background-repeat: repeat;"></div>';
                 $htmlresult .= '</div></a>
 				';
             }
@@ -434,13 +433,13 @@ class FilmGalleryClass
         return $htmlresult;
     }
 
-    function drawGalleryBottom(&$imageFiles, $width, $height, $divName)
+    function drawGalleryBottom($imageFiles, $width, $height, $divName): string
     {
-        if ($this->thumbheight == 0)
-            $this->thumbheight = 90;
+        if ($this->thumbHeight == 0)
+            $this->thumbHeight = 90;
 
         if ($this->thumbBackgroundImage == '')
-            $this->thumbBackgroundImage = $this->bgimagefolder . 'film_h.gif';
+            $this->thumbBackgroundImage = $this->backgroundImageFolder . 'film_h.gif';
 
         if ($this->thumbBackgroundImage == 'none')
             $this->thumbBackgroundImage = '';
@@ -459,13 +458,13 @@ class FilmGalleryClass
         return $htmlresult;
     }
 
-    function drawGalleryVertical(&$imagefiles, $width, $height, $divName, $rel = '')
+    function drawGalleryVertical($imageFiles, $height, $divName, $rel = ''): string
     {
-        if ($this->thumbwidth == 0)
-            $this->thumbwidth = 90;
+        if ($this->thumbWidth == 0)
+            $this->thumbWidth = 90;
 
         if ($this->thumbBackgroundImage == '')
-            $this->thumbBackgroundImage = $this->bgimagefolder . 'film_v.gif';
+            $this->thumbBackgroundImage = $this->backgroundImageFolder . 'film_v.gif';
 
         if ($this->thumbBackgroundImage == 'none')
             $this->thumbBackgroundImage = '';
@@ -473,17 +472,17 @@ class FilmGalleryClass
         $htmlresult = '
         <!-- Film Gallery (Vertical Scroll with Shadowbox)-->
 ';
-        $htmlresult .= $this->VerticalNavigation($imagefiles, $height, $divName, $rel, true);
+        $htmlresult .= $this->VerticalNavigation($imageFiles, $height, $divName, $rel, true);
         return $htmlresult;
     }
 
-    function drawGalleryHorizontal(&$imageFiles, $width, $height, $divName, $rel = '')
+    function drawGalleryHorizontal($imageFiles, $width, $divName, $rel = ''): string
     {
-        if ($this->thumbheight == 0)
-            $this->thumbheight = 90;
+        if ($this->thumbHeight == 0)
+            $this->thumbHeight = 90;
 
         if ($this->thumbBackgroundImage == '')
-            $this->thumbBackgroundImage = $this->bgimagefolder . 'film_h.gif';
+            $this->thumbBackgroundImage = $this->backgroundImageFolder . 'film_h.gif';
 
         if ($this->thumbBackgroundImage == 'none')
             $this->thumbBackgroundImage = '';
@@ -496,24 +495,73 @@ class FilmGalleryClass
         return $htmlresult;
     }
 
-    function getListToReplace($par, &$options, &$text, $qtype)
+    function getListToReplace(string $par, array &$options, string $text, string $tagName, string $separator = ':', string $quote_char = '"'): array
     {
         $fList = array();
         $l = strlen($par) + 2;
 
         $offset = 0;
-        do {
+        while (1) {
             if ($offset >= strlen($text))
                 break;
 
-            $ps = strpos($text, $qtype[0] . $par . '=', $offset);
+            $ps = strpos($text, $tagName[0] . $par . $separator, $offset);
             if ($ps === false)
                 break;
+
 
             if ($ps + $l >= strlen($text))
                 break;
 
-            $pe = strpos($text, $qtype[1], $ps + $l);
+            $quote_open = false;
+
+            $ps1 = $ps + $l;
+            $count = 0;
+            while (1) {
+
+                $count++;
+                if ($count > 1000) {
+                    Factory::getApplication()->enqueueMessage('Quote count > 1000', 'error');
+                    return [];
+                }
+
+                if ($quote_char == '')
+                    $peq = false;
+                else {
+                    while (1) {
+                        $peq = strpos($text, $quote_char, $ps1);
+
+                        if ($peq > 0 and $text[$peq - 1] == '\\') {
+                            // ignore quote in this case
+                            $ps1++;
+
+                        } else
+                            break;
+                    }
+                }
+
+                $pe = strpos($text, $tagName[1], $ps1);
+
+                if ($pe === false)
+                    break;
+
+                if ($peq !== false and $peq < $pe) {
+                    //quote before the end character
+
+                    if (!$quote_open)
+                        $quote_open = true;
+                    else
+                        $quote_open = false;
+
+                    $ps1 = $peq + 1;
+                } else {
+                    if (!$quote_open)
+                        break;
+
+                    $ps1 = $pe + 1;
+
+                }
+            }
 
             if ($pe === false)
                 break;
@@ -522,19 +570,21 @@ class FilmGalleryClass
 
             $options[] = trim(substr($text, $ps + $l, $pe - $ps - $l));
             $fList[] = $noteString;
+
             $offset = $ps + $l;
-        } while (!($pe === false));
+        }
 
         //for these with no parameters
-        $ps = strpos($text, $qtype[0] . $par . $qtype[1]);
+        $ps = strpos($text, $tagName[0] . $par . $tagName[1]);
         if (!($ps === false)) {
             $options[] = '';
-            $fList[] = $qtype[0] . $par . $qtype[1];
+            $fList[] = $tagName[0] . $par . $tagName[1];
         }
+
         return $fList;
     }
 
-    function strip_html_tags_textarea($text)
+    function strip_html_tags_textarea($text):string
     {
         return preg_replace(
             array(
