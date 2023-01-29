@@ -2,10 +2,10 @@
     <name>Film Gallery</name>
     <author>Ivan Komlev</author>
     <creationDate>January 2023</creationDate>
-    <copyright>Copyright (C) 2009-2018 Ivan Komlev. All rights reserved.</copyright>
+    <copyright>Copyright (C) 2009-2023 Ivan Komlev. All rights reserved.</copyright>
     <license>GNU General Public License</license>
     <authorEmail>support@joomlaboat.com</authorEmail>
-    <authorUrl>http://www.joomlaboat.com/</authorUrl>
+    <authorUrl>https://www.joomlaboat.com/</authorUrl>
     <version>1.1.3</version>
     <description>
 	
@@ -14,17 +14,17 @@
 <p>v. 1.1.2</p>
 <p>A plugin to show window of photos with a scroll bar.</p>
 
-<p>Copy Protection option - some sort of glass infront of image to block 'Image save as', needs to be enabled in plugin settings.</p>
+<p>Copy Protection option - some sort of glass in front of image to block 'Image save as', needs to be enabled in plugin settings.</p>
 <h3>Usage</h3>
 
 
-<p>{filmgallery=FOLDER, WIDTH, HEIGTH, SCROLLPOSITION, FILELIST, THUMBBGIMAGE, SCROLLSIZE, THUMBWIDTH, THUMBHEIGHT, CSSSTYLE}</p>
+<p>{filmgallery=FOLDER, WIDTH, HEIGHT, SCROLL_POSITION, FILE_LIST, THUMBNAIL_BACKGROUND_IMAGE, SCROLL_SIZE, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, CSS_STYLE}</p>
 
-<p>SCROLLPOSITION: left | right | top | bottom</p>
+<p>SCROLL_POSITION: left | right | top | bottom</p>
 
-<p>FILELIST: this is optional parameter file names (names only, without path) should be separated with semicolon ;</p>
+<p>FILE_LIST: this is optional parameter file names (names only, without path) should be separated with semicolon ;</p>
 
-<p>Only first four options are required (FOLDER, WIDTH, HEIGTH, SCROLLPOSITION) the rest of the are optional</p>
+<p>Only first four options are required (FOLDER, WIDTH, HEIGHT, SCROLL_POSITION) the rest of the are optional</p>
 
 <p>example:</p>
 
@@ -45,7 +45,7 @@
 	<fields name="params">
 		<fieldset name="basic">
 			
-		<field name="copyprotection" type="radio" default="0" label="Copy protection" description="This will place sort of glass infront of image to do not block image saving/draging" >
+		<field name="copyprotection" type="radio" default="0" label="Copy protection" description="This will place sort of glass in front of image to do not block image saving/dragging" >
 			<option value="1">Yes</option>
 			<option value="0">No</option>
 		</field>

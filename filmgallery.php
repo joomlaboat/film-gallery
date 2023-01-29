@@ -1,16 +1,14 @@
 <?php
 /**
- * Film Gallery Joomla! 3.x Native Component
- * @version 1.1.2
+ * Film Gallery Joomla! 3.x/4.x Native Component
+ * @version 1.1.3
  * @author Ivan Komlev <support@joomlaboat.com>
- * Copyright (C) 2009-2018 Ivan Komlev
+ * Copyright (C) 2009-2023 Ivan Komlev
  * @link http://www.joomlaboat.com
  * @license GNU/GPL *
  */
 
 defined('_JEXEC') or die('Restricted access');
-
-//jimport('joomla.plugin.plugin');
 
 require_once('render.php');
 
@@ -19,12 +17,12 @@ class plgContentFilmGallery extends JPlugin
     public function onContentPrepare($context, &$row, &$params, $page = 0)
     {
         if (is_object($row)) {
-            return $this->plgFilmGallery($row->text, $params);
+            return $this->plgFilmGallery($row->text);
         }
-        return $this->plgFilmGallery($row, $params);
+        return $this->plgFilmGallery($row);
     }
 
-    function plgFilmGallery(&$text_original, &$params)
+    function plgFilmGallery(&$text_original): int
     {
         $fgc = new FilmGalleryClass;
 

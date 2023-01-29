@@ -213,8 +213,7 @@ class FilmGalleryClass
 			position:relative;
 			">
 
-			<table border="0" width="' . $this->scrollSize . '" cellpadding="0" cellspacing="0"
-			style="border:none;padding:0;margin:0;';
+			<table style="border-style:none;border:none;height:'.$this->scrollSize.'px;margin:0;padding: 0;border-collapse: collapse; border-spacing: 0;';
 
         if ($this->thumbBackgroundImage != '') {
             $htmlresult .= 'background-image: url(' . $this->thumbBackgroundImage . ');	background-repeat: repeat-y; background-position:center center;';
@@ -314,7 +313,7 @@ class FilmGalleryClass
         return $htmlresult;
     }
 
-    function drawGalleryTop($imagefiles, $width, $height, $divName): string
+    function drawGalleryTop($imageFiles, $width, $height, $divName): string
     {
         if ($this->thumbHeight == 0)
             $this->thumbHeight = 90;
@@ -328,10 +327,10 @@ class FilmGalleryClass
         $htmlresult = '
         <!-- Film Gallery (Top Scroll)-->
 		';
-        $htmlresult .= $this->HorizontalNavigation($imagefiles, $width, $divName);
+        $htmlresult .= $this->HorizontalNavigation($imageFiles, $width, $divName);
         $htmlresult .= '
 		<div style="position: relative;overflow:hidden;">
-        <img src="' . $imagefiles[0] . '" style="width:' . $width . 'px;height:' . $height . 'px;z-index:4;padding:0;margin:0;" id="' . $divName . '_Main">';
+        <img src="' . $imageFiles[0] . '" style="width:' . $width . 'px;height:' . $height . 'px;z-index:4;padding:0;margin:0;" id="' . $divName . '_Main">';
         if ($this->copyProtection)
             $htmlresult .= '<div style="position: absolute;top: 0;left:0;width:' . $width . 'px;height:' . $height . 'px;background-image: url(plugins/content/filmgalleryfiles/glass.png);background-repeat: repeat;"></div>';
         $htmlresult .= '</div>';
@@ -350,8 +349,7 @@ class FilmGalleryClass
 			margin: 0;
 			position:relative;
 			">
-			<table border="0" height="' . $this->scrollSize . '" cellpadding="0" cellspacing="0"
-			style="border-style:none;padding:0;margin:0;';
+			<table style="border-style:none;border:none;height:'.$this->scrollSize.'px;margin:0;padding: 0;border-collapse: collapse; border-spacing: 0;';
 
         if ($this->thumbBackgroundImage != '') {
             $htmlresult .= 'background-image: url(' . $this->thumbBackgroundImage . ');background-repeat: repeat-x; background-position:center center; ';
