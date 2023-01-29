@@ -13,7 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class FilmGalleryClass
 {
-    var $copyprotection;
+    var bool $copyProtection;
     var $bgimagefolder;
     var int $scrollSize;
     var $thumbwidth;
@@ -21,9 +21,10 @@ class FilmGalleryClass
     var $padding;
     private string $thumbBackgroundImage;
 
-    function getFilmGallery($galleryparams, $count)
+    function getFilmGallery($galleryParams, $count): string
     {
-        $opt = explode(',', $galleryparams);
+        $opt = str_getcsv($galleryParams,",","\"");
+
         if (count($opt) < 1)
             return '';
 
@@ -102,22 +103,21 @@ class FilmGalleryClass
     }
 
     //Image Gallery
-    function getFileList($dirPath, $fileList): array
+    function getFileList(string $dirPath, string $fileList): array
     {
-        echo '$dirPath=' . $dirPath . '*';
-        //if ($dirPath[0] == '/') {
-        //  $dirPath = substr($dirPath, 1, strlen($dirPath) - 1);
-        //}
-        //echo '$dirPath=' . $dirPath . '*';
+        if ($dirPath[0] == '/') {
+            $dirPath = substr($dirPath, 1, strlen($dirPath) - 1);
+        }
 
-        $sys_path = JPATH_SITE . str_replace('/', DIRECTORY_SEPARATOR, $dirPath);
-        echo '$sys_path=' . $sys_path . '*';
+        $sys_path = JPATH_SITE . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $dirPath);
 
         $imList = array();
-        if ($fileList) {
+        if ($fileList !="") {
             $a = explode(';', $fileList);
+
             foreach ($a as $b) {
                 $filename = $sys_path . DIRECTORY_SEPARATOR . trim($b);
+
                 if (file_exists($filename))
                     $imList[] = '/' . $dirPath . '/' . trim($b);;
             }
@@ -138,9 +138,6 @@ class FilmGalleryClass
                         }
                     }
                 }
-
-                print_r($imList);
-
                 sort($imList);
             } else {
                 JFactory::getApplication()->enqueueMessage('Path "' . $sys_path . '" not found', 'error');
@@ -149,7 +146,7 @@ class FilmGalleryClass
         return $imList;
     }
 
-    function FileExtenssion($src)
+    function FileExtenssion($src): string
     {
         $fileExtension = '';
         $name = explode(".", strtolower($src));
@@ -158,11 +155,9 @@ class FilmGalleryClass
         $extensions = explode(" ", $allowedExtensions);
         for ($i = 0; count($extensions) > $i; $i = $i + 1) {
             if ($extensions[$i] == $currentExtensions) {
-                $extensionOK = 1;
                 $fileExtension = $extensions[$i];
 
                 return $fileExtension;
-                break;
             }
         }
         return $fileExtension;
@@ -179,9 +174,7 @@ class FilmGalleryClass
         if ($this->thumbBackgroundImage == 'none')
             $this->thumbBackgroundImage = '';
 
-        $htmlresult = '';
-
-        $htmlresult .= '
+        $htmlresult = '
         <!-- Film Gallery (Left Scroll)-->
 		<table width="' . ($width + $this->scrollSize) . '" height="' . $height . '" border="0" align="center" cellpadding="0" cellspacing="0" style="border:none;padding:0;margin:0;">
 		<tr>
@@ -194,7 +187,7 @@ class FilmGalleryClass
 		<div style="width:' . $width . 'px; height:' . $height . 'px;position: relative;overflow:hidden;">
         <img src="' . $imageFiles[0] . '" width="' . $width . '" height="' . $height . '" style="z-index:4;padding:0;margin:0;" id="' . $divName . '_Main" name="' . $divName . '_Main">';
 
-        if ($this->copyprotection)
+        if ($this->copyProtection)
             $htmlresult .= '<div style="position: absolute;top: 0;left:0;width:' . $width . 'px;height:' . $height . 'px;background-image: url(plugins/content/filmgalleryfiles/glass.png);background-repeat: repeat;"></div>';
 
         $htmlresult .= '</div>
@@ -238,20 +231,20 @@ class FilmGalleryClass
 			<td width="' . $this->scrollSize . '" valign="middle" align="center" style="position:relative;border:none;margin:0;padding:0;" >
 ';
 
-            if ($this->copyprotection and $rel == '') {
+            if ($this->copyProtection and $rel == '') {
                 $htmlresult .= '
 				<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbwidth . 'px;margin-left:auto;margin-right:auto;position:relative;cursor:pointer;" onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imagefile . '";\'	onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imagefile . '";\'>
 				<img src="' . $imagefile . '" width="' . $this->thumbwidth . '" style="padding:0;width:' . $this->thumbwidth . 'px;margin:0;border:none;">';
                 $htmlresult .= '<div style="position: absolute;top: 0;left:0;right:0;bottom:0;background-image: url(' . $this->bgimagefolder . 'glass.png);background-repeat: repeat;"></div>';
                 $htmlresult .= '</div>
 				';
-            } elseif (!$this->copyprotection and $rel == '') {
+            } elseif (!$this->copyProtection and $rel == '') {
                 $htmlresult .= '
 					<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbwidth . 'px;margin-left:auto;margin-right:auto;">
 					<img src="' . $imagefile . '" width="' . $this->thumbwidth . '" style="border:none;padding:0;width:' . $this->thumbwidth . 'px;margin:0;"
 					onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imagefile . '";\'>
 					</div>';
-            } elseif (!$this->copyprotection and $rel != '') {
+            } elseif (!$this->copyProtection and $rel != '') {
                 $alt = '';
                 $htmlresult .= '<div style="margin-bottom:' . $this->padding . 'px;width:' . $this->thumbwidth . 'px;margin-left:auto;margin-right:auto;">';
 
@@ -262,7 +255,7 @@ class FilmGalleryClass
 
                 $htmlresult .= '<img src="' . $imagefile . '" width="' . $this->thumbwidth . '" style="border:none;padding:0;width:' . $this->thumbwidth . 'px;margin:0;" /></a>
 					</div>';
-            } elseif ($this->copyprotection and $rel != '') {
+            } elseif ($this->copyProtection and $rel != '') {
                 $alt = '';
 
                 if ($rel == 'jcepopup')
@@ -308,7 +301,7 @@ class FilmGalleryClass
 		<div style="width:' . $width . 'px; height:' . $height . 'px;position: relative;overflow:hidden;">
         <img src="' . $imageFiles[0] . '" width="' . $width . '" height="' . $height . '" style="z-index:4;padding:0;margin:0;" id="' . $divName . '_Main" name="' . $divName . '_Main">';
 
-        if ($this->copyprotection)
+        if ($this->copyProtection)
             $htmlresult .= '<div style="position: absolute;top: 0;left:0;width:' . $width . 'px;height:' . $height . 'px;background-image: url(plugins/content/filmgalleryfiles/glass.png);background-repeat: repeat;"></div>';
 
         $htmlresult .= '</div>
@@ -340,7 +333,7 @@ class FilmGalleryClass
         $htmlresult .= '
 		<div style="position: relative;overflow:hidden;">
         <img src="' . $imagefiles[0] . '" width="' . $width . '" height="' . $height . '" style="z-index:4;padding:0;margin:0;" id="' . $divName . '_Main" name="' . $divName . '_Main">';
-        if ($this->copyprotection)
+        if ($this->copyProtection)
             $htmlresult .= '<div style="position: absolute;top: 0;left:0;width:' . $width . 'px;height:' . $height . 'px;background-image: url(plugins/content/filmgalleryfiles/glass.png);background-repeat: repeat;"></div>';
         $htmlresult .= '</div>';
         return $htmlresult;
@@ -375,7 +368,7 @@ class FilmGalleryClass
 
             $htmlresult .= '<td height="' . $this->scrollSize . '" width="110" align="center" valign="top" style="width:110px !important;position:relative;border:none;margin:0;padding:0;">';
 
-            if ($this->copyprotection and $rel == '') {
+            if ($this->copyProtection and $rel == '') {
                 $htmlresult .= '
 				<div style="margin-right:' . $this->padding . 'px;height:' . $this->thumbheight . 'px;
 				width:110px !important;
@@ -388,7 +381,7 @@ class FilmGalleryClass
                 $htmlresult .= '</div>
 				';
 
-            } elseif (!$this->copyprotection and $rel == '') {
+            } elseif (!$this->copyProtection and $rel == '') {
                 $htmlresult .= '<div style="margin-right:' . $this->padding . 'px;height:' . $this->thumbheight . 'px;margin-top:' . $marginTop . 'px;">
 					<img src="' . $imageFile . '" ';
 
@@ -402,7 +395,7 @@ class FilmGalleryClass
 
                 $htmlresult .= 'height:' . $this->thumbheight . 'px;" onMouseOver=\'document.getElementById("' . $divName . '_Main").src="' . $imageFile . '";\'>
 					</div>';
-            } elseif (!$this->copyprotection and $rel != '') {
+            } elseif (!$this->copyProtection and $rel != '') {
                 $alt = '';
                 $htmlresult .= '<div style="width:110px !important;margin-right:' . $this->padding . 'px;height:' . $this->thumbheight . 'px;margin-top:' . $marginTop . 'px;">';
 
@@ -414,7 +407,7 @@ class FilmGalleryClass
                 $htmlresult .= '<img src="' . $imageFile . '" height="' . $this->thumbheight . '" style="
 					width:110px !important;border:none;margin:0;padding:0;height:' . $this->thumbheight . 'px;" alt="' . $alt . '" /></a>
 					</div>';
-            } elseif ($this->copyprotection and $rel != '') {
+            } elseif ($this->copyProtection and $rel != '') {
                 $alt = '';
 
                 if ($rel == 'jcepopup')
@@ -458,7 +451,7 @@ class FilmGalleryClass
 
         $htmlresult .= '<img src="' . $imageFiles[0] . '" width="' . $width . '" height="' . $height . '" style="z-index:4;padding:0;margin:0;" id="' . $divName . '_Main" name="' . $divName . '_Main">';
 
-        if ($this->copyprotection)
+        if ($this->copyProtection)
             $htmlresult .= '<div style="position: absolute;top: 0;left:0;width:' . $width . 'px;height:' . $height . 'px;background-image: url(plugins/content/filmgalleryfiles/glass.png);background-repeat: repeat;"></div>';
 
         $htmlresult .= $this->HorizontalNavigation($imageFiles, $width, $divName);
