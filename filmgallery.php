@@ -34,7 +34,7 @@ class plgContentFilmGallery extends JPlugin
         $options = array();
         $fgc->copyProtection = $this->params->def('copyprotection');
         $fgc->backgroundImageFolder = 'plugins/content/filmgallery/files/';
-        $fList = $fgc->getListToReplace('filmgallery', $options, $text, '{}');
+        $fList = $fgc->getListToReplace('filmgallery', $options, $text, '{}','=');
 
         for ($i = 0; $i < count($fList); $i++) {
             $replaceWith = $fgc->getFilmGallery($options[$i], $i);

@@ -8,9 +8,10 @@
  * @license GNU/GPL *
  */
 
-use Joomla\CMS\Factory;
-
 defined('_JEXEC') or die('Restricted access');
+
+//jimport('joomla.plugin.plugin');
+use Joomla\CMS\Factory;
 
 class FilmGalleryClass
 {
@@ -493,7 +494,7 @@ class FilmGalleryClass
         return $htmlresult;
     }
 
-    function getListToReplace(string $par, array &$options, string $text, string $tagName, string $separator = ':', string $quote_char = '"'): array
+    function getListToReplace(string $par, array &$options, string $text, string $brackets, string $separator = ':', string $quote_char = '"'): array
     {
         $fList = array();
         $l = strlen($par) + 2;
@@ -503,7 +504,7 @@ class FilmGalleryClass
             if ($offset >= strlen($text))
                 break;
 
-            $ps = strpos($text, $tagName[0] . $par . $separator, $offset);
+            $ps = strpos($text, $brackets[0] . $par . $separator, $offset);
             if ($ps === false)
                 break;
 
@@ -538,7 +539,7 @@ class FilmGalleryClass
                     }
                 }
 
-                $pe = strpos($text, $tagName[1], $ps1);
+                $pe = strpos($text, $brackets[1], $ps1);
 
                 if ($pe === false)
                     break;
@@ -573,10 +574,10 @@ class FilmGalleryClass
         }
 
         //for these with no parameters
-        $ps = strpos($text, $tagName[0] . $par . $tagName[1]);
+        $ps = strpos($text, $brackets[0] . $par . $brackets[1]);
         if (!($ps === false)) {
             $options[] = '';
-            $fList[] = $tagName[0] . $par . $tagName[1];
+            $fList[] = $brackets[0] . $par . $brackets[1];
         }
 
         return $fList;
